@@ -1,0 +1,6 @@
+listen = ""
+
+[programs.echo]
+command = "echo"
+args = ["I run forever in a loop"]
+autorestart = true
