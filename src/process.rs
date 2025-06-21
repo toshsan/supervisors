@@ -1,7 +1,7 @@
 use crate::supervisor::ProcessStatus;
 use std::collections::HashMap;
-use std::process::Stdio;
 use std::sync::Arc;
+use std::{fs::OpenOptions, path::PathBuf, process::Stdio};
 use tokio::sync::Mutex;
 use tokio::{process::Command, task::JoinHandle};
 
@@ -10,6 +10,7 @@ pub struct ManagedProcess {
     pub command: String,
     pub args: Vec<String>,
     pub autorestart: bool,
+    pub logfile: Option<String>,
 }
 
 impl ManagedProcess {
@@ -20,11 +21,27 @@ impl ManagedProcess {
         let command = self.command.clone();
         let args = self.args.clone();
         let autorestart = self.autorestart;
-        let name = self.name;
+        let logfile = self.logfile.clone();
+        let name = self.name.clone();
 
         tokio::spawn(async move {
             loop {
                 println!("[{}] Starting: {} {:?}", name, command, args);
+
+                let (stdout, stderr) = if let Some(path) = logfile.as_ref() {
+                    let log_path = PathBuf::from(path);
+                    let log_file = OpenOptions::new()
+                        .create(true)
+                        .append(true)
+                        .open(&log_path)
+                        .expect("Failed to open logfile");
+
+                    let stdout = Stdio::from(log_file.try_clone().expect("clone stdout"));
+                    let stderr = Stdio::from(log_file);
+                    (stdout, stderr)
+                } else {
+                    (Stdio::inherit(), Stdio::inherit()) // ✅ Fallback to stderr/stdout
+                };
 
                 {
                     let mut map = status_map.lock().await;
@@ -35,8 +52,8 @@ impl ManagedProcess {
 
                 let mut child = Command::new(&command)
                     .args(&args)
-                    .stdout(Stdio::inherit())
-                    .stderr(Stdio::inherit())
+                    .stdout(stdout)
+                    .stderr(stderr)
                     .spawn()
                     .expect("Failed to spawn process");
 

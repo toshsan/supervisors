@@ -27,6 +27,7 @@ pub async fn run_supervisor(config: &Config) -> SupervisorState {
         let cmd = program.command.clone();
         let args = program.args.clone().unwrap_or_default();
         let autorestart = program.autorestart.unwrap_or(false);
+        let logfile = program.logfile.clone();
 
         let status_entry = ProcessStatus {
             name: name.clone(),
@@ -41,6 +42,7 @@ pub async fn run_supervisor(config: &Config) -> SupervisorState {
             command: cmd,
             args,
             autorestart,
+            logfile,
         };
 
         let handle = proc.start_with_status_updater(status_map_clone);

@@ -13,6 +13,7 @@ pub struct Program {
     pub command: String,
     pub args: Option<Vec<String>>,
     pub autorestart: Option<bool>,
+    pub logfile: Option<String>,
 }
 
 impl Config {
