@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'  # triggers on version tags like v1.0.0
+      - "v*.*.*" # triggers on version tags like v1.0.0
 
 jobs:
   build:
@@ -13,10 +13,10 @@ jobs:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            ext: ''
+            ext: ""
           - os: macos-latest
             target: x86_64-apple-darwin
-            ext: ''
+            ext: ""
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             ext: .exe
@@ -36,10 +36,13 @@ jobs:
 
       - name: Package binary
         run: |
-          mkdir dist
+          mkdir -p dist
           cp target/${{ matrix.target }}/release/supervisors${{ matrix.ext }} dist/
-          cd dist
-          Compress-Archive -Path supervisors-${{ matrix.target }}.zip supervisors${{ matrix.ext }}
+          if [ "${{ runner.os }}" != "Windows" ]; then
+            cd dist
+            zip supervisors-${{ matrix.target }}.zip supervisors${{ matrix.ext }}
+          fi
+        shell: bash
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
