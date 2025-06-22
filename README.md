@@ -2,7 +2,7 @@
 
 A Multi Process Supervisor written in Rust
 
-A lightweight process supervisor written in Rust. Inspired by [Supervisor](http://supervisord.org), this tool allows you to manage and monitor long-running background processes with optional file-based logging and a simple HTTP API.
+A lightweight process supervisor written in Rust. Inspired by [Supervisord](http://supervisord.org), this tool allows you to manage and monitor long-running background processes with optional file-based logging and a simple HTTP API.
 
 ---
 
