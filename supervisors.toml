@@ -1,4 +1,4 @@
-listen = ""
+# listen = ""
 
 [programs.echo]
 command = "echo"

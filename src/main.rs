@@ -1,15 +1,13 @@
+use axum::{Json, Router, extract::State, routing::get};
+
 mod config;
 mod process;
 mod supervisor;
 
-use axum::extract::State;
-use axum::{Json, Router, routing::get};
-use tracing_subscriber;
-
 use crate::supervisor::{ProcessStatus, SupervisorState, run_supervisor};
 
 async fn health() -> &'static str {
-    "Supervisor OK"
+    "Supervisor Running. Check /status"
 }
 
 async fn status(State(state): State<SupervisorState>) -> Json<Vec<ProcessStatus>> {
@@ -25,20 +23,22 @@ async fn main() {
     let state = run_supervisor(&config).await;
 
     let port = config.listen.unwrap_or("localhost:3000".to_string());
-    if port.is_empty() {
-        tokio::signal::ctrl_c()
-            .await
-            .expect("Failed to listen for SIGINT");
-        println!("SIGINT received. Exiting...");
-        return;
-    }
-    // Serve API
-    let app = Router::new()
-        .route("/health", get(health))
-        .route("/status", get(status))
-        .with_state(state);
 
-    println!("API running on {port}");
-    let listener = tokio::net::TcpListener::bind(port).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    if !port.is_empty() {
+        let app = Router::new()
+            .route("/", get(health))
+            .route("/status", get(status))
+            .with_state(state.clone());
+
+        println!("API listening on http://{port}");
+        let listener = tokio::net::TcpListener::bind(port).await.unwrap();
+        axum::serve(listener, app).await.unwrap();
+    }
+
+    tokio::signal::ctrl_c()
+        .await
+        .expect("Failed to listen for SIGINT");
+    println!("SIGINT received. Exiting...");
+
+    supervisor::shutdown_all(state).await;
 }

@@ -53,3 +53,13 @@ pub async fn run_supervisor(config: &Config) -> SupervisorState {
         statuses: status_map,
     }
 }
+
+/// Gracefully shut down all processes (for now, just updates status)
+pub async fn shutdown_all(state: SupervisorState) {
+    let mut map = state.statuses.lock().await;
+    println!("Shutting down all processes...");
+    for (_name, status) in map.iter_mut() {
+        status.running = false;
+    }
+    // Future: kill running tasks or children if needed
+}
