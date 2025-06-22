@@ -35,14 +35,22 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }}
 
       - name: Package binary
+        shell: pwsh
         run: |
-          mkdir -p dist
-          cp target/${{ matrix.target }}/release/supervisors${{ matrix.ext }} dist/
-          if [ "${{ runner.os }}" != "Windows" ]; then
-            cd dist
-            zip supervisors-${{ matrix.target }}.zip supervisors${{ matrix.ext }}
-          fi
-        shell: bash
+          $Target = "${{ matrix.target }}"
+          $Ext = "${{ matrix.ext }}"
+          $BinaryName = "supervisors$Ext"
+          $OutZip = "supervisors-$Target.zip"
+          $Dist = "dist"
+
+          New-Item -ItemType Directory -Force -Path $Dist | Out-Null
+          Copy-Item "target/$Target/release/$BinaryName" "$Dist/"
+
+          if ($IsWindows) {
+            Compress-Archive -Path "$Dist/$BinaryName" -DestinationPath "$Dist/$OutZip"
+          } else {
+            & zip "$Dist/$OutZip" "$Dist/$BinaryName"
+          }
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
