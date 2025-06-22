@@ -39,7 +39,7 @@ jobs:
           mkdir dist
           cp target/${{ matrix.target }}/release/supervisors${{ matrix.ext }} dist/
           cd dist
-          zip supervisors-${{ matrix.target }}.zip supervisors${{ matrix.ext }}
+          Compress-Archive -Path supervisors-${{ matrix.target }}.zip supervisors${{ matrix.ext }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
