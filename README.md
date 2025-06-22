@@ -25,6 +25,21 @@ A lightweight process supervisor written in Rust. Inspired by [Supervisord](http
 
 ## 🚀 Getting Started
 
+### Install
+
+Install from [source](https://github.com/toshsan/supervisors.git) or [github release](https://github.com/toshsan/supervisors/releases)
+
+### Create a supervisors.conf config file
+
+[programs.echo]
+command = "echo"
+args = ["I run forever in a loop"]
+autorestart = true
+
+### run
+
+supervisors
+
 ### 1. Clone & Build
 
 ```bash
