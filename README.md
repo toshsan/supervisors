@@ -41,12 +41,12 @@ Great question. Here's a **rational, developer-focused comparison** for why you'
 
 ### 🔍 1. **I Need a Lightweight, Portable Supervisor**
 
-| Tool                  | Dependencies         | Portability                     |
-| --------------------  | -------------------- | ------------------------------- |
-| Supervisor            | Python, config files | Unix only                       |
-| systemd               | Requires system init | Linux only                      |
-| Docker                | Daemon + images      | OS-agnostic, but heavy          |
-| ✅ supervisors        | Standalone binary    | Cross-platform, no runtime deps |
+| Tool           | Dependencies         | Portability                     |
+| -------------- | -------------------- | ------------------------------- |
+| Supervisor     | Python, config files | Unix only                       |
+| systemd        | Requires system init | Linux only                      |
+| Docker         | Daemon + images      | OS-agnostic, but heavy          |
+| ✅ supervisors | Standalone binary    | Cross-platform, no runtime deps |
 
 This Docker friendly supervisor compiles to a single binary, runs on any platform with zero dependencies, and doesn't rely on system init processes.
 
@@ -54,7 +54,7 @@ This Docker friendly supervisor compiles to a single binary, runs on any platfor
 
 ### 💡 2. **Simple Config, Simple API**
 
-- Supervisor has its own `.ini` format and XML-RPC interface
+- Supervisord depends on python and has bunch of dependencies. CPU & Memory usage is usually higher than desired.
 - Docker requires image building, volumes, and orchestration
 - systemd is powerful but complex and Linux-specific
 
